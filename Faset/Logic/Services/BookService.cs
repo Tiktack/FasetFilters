@@ -29,6 +29,10 @@ namespace Logic.Services
                 .Include(x => x.picture)
                 .Take(count);
         }
+        public IEnumerable<string> GetLanguages()
+        {
+            return context.Languages.Take(5).Select(x => x.name);
+        }
 
     }
 }

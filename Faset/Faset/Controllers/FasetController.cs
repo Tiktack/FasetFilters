@@ -21,6 +21,13 @@ namespace Faset.Controllers
         {
             return View();
         }
+        public IActionResult FacetMenu()
+        {
+            return View(new FacetMenuModel
+            {
+                Languages = bookService.GetLanguages()
+            });
+        }
         public IActionResult GetBookList()
         {
 
