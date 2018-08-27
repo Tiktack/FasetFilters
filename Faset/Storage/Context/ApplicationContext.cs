@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Storage.Context
 {
-    class ApplicationContext: DbContext
+    public class ApplicationContext : DbContext
     {
 
         public DbSet<Book> Books { get; set; }

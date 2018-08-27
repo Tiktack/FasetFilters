@@ -1,0 +1,50 @@
+﻿@model Faset.Models.FasetListViewModel
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h2>View</h2>
+
+
+
+<div class="row">
+    <div class="col-md-3">
+        One of three columns
+    </div>
+    <div class="col-md-9">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var book in Model.Books)
+                {
+                    <tr>
+                        <td>
+                            @book.Name
+                        </td>
+                        <td>
+                            @book.Author
+                        </td>
+                        <td>
+                            @book.Discription
+                        </td>
+                        <td>
+                            @book.Language
+                        </td>
+                        <td>
+                            @book.Price
+                        </td>
+                        <td>
+                            @book.Year
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

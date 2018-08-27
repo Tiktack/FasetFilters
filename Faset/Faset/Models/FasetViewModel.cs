@@ -7,11 +7,11 @@ namespace Faset.Models
 {
     public class FasetViewModel
     {
-        string Name { get; set; }
-        string Author { get; set; }
-        string Price { get; set; }
-        string Discription { get; set; }
-        string Language { get; set; }
-        string Year { get; set; }
+        public string Name { get; set; }
+        public string Author { get; set; }
+        public double? Price { get; set; }
+        public string Discription { get; set; }
+        public string Language { get; set; }
+        public string Year { get; set; }
     }
 }
