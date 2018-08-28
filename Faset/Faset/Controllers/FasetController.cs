@@ -25,28 +25,45 @@ namespace Faset.Controllers
         {
             return View(new FacetMenuModel
             {
-                Languages = bookService.GetLanguages()
+                Languages = bookService.GetLanguages(),
+                //Publishers = bookService.GetPublishers(),
+                Sales_notes = bookService.GetSales_note()
+
             });
         }
         public IActionResult GetBookList()
         {
-
-
-            var a = bookService.GetBooks(10);
-            var b = a.Select(x =>
-                     new FasetViewModel
-                     {
-                         Name = x?.name,
-                         Author = x?.name,
-                         Discription = x?.description,
-                         Language = x?.language?.name,
-                         Price = x?.price,
-                         Year = x?.year
-                     });
-
             return View(new FasetListViewModel
             {
-                Books = b
+                Books = bookService.GetBooks(10).Select(x =>
+                    new FasetViewModel
+                    {
+                        Name = x?.name,
+                        Author = x?.name,
+                        Discription = x?.description,
+                        Language = x?.language?.name,
+                        Price = x?.price,
+                        Year = x?.year
+                    })
+            });
+        }
+        public IActionResult GetBookListFacetedLanguage(string facet)
+        {
+            var languagesFacet = facet.Split('|');
+            var result = bookService.GetAllBooks();
+                result = result.Where(x => languagesFacet.Any(t=>t==x?.language?.name));
+            return View(new FasetListViewModel
+            {
+                Books = result.Take(10).Select(x =>
+                   new FasetViewModel
+                   {
+                       Name = x?.name,
+                       Author = x?.name,
+                       Discription = x?.description,
+                       Language = x?.language?.name,
+                       Price = x?.price,
+                       Year = x?.year
+                   })
             });
         }
     }
