@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Faset.Models
+namespace Faset.Models.Facet
 {
-    public class FasetViewModel
+    public class BookViewModel
     {
         public string Name { get; set; }
         public string Author { get; set; }
@@ -13,5 +13,6 @@ namespace Faset.Models
         public string Discription { get; set; }
         public string Language { get; set; }
         public string Year { get; set; }
+        public string Sales_note { get; set; }
     }
 }

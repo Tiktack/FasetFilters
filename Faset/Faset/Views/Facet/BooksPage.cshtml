@@ -1,0 +1,96 @@
+﻿@model Faset.Models.Facet.PageViewModel
+
+@{
+    ViewData["Title"] = "Books";
+}
+
+<h2>View</h2>
+
+<div class="row">
+    <div id="facet-menu" class="col-md-2 facet-menu">
+        <h4>Choose Language</h4>
+        @foreach (var task in Model.Languages)
+        {
+            <div class="form-check">
+                <input class="form-check-input facet-language" type="checkbox" value="@task" id="@task">
+                <label class="form-check-label" for="@task">
+                    @task
+                </label>
+            </div>
+        }
+        <h4>Choose sales notes</h4>
+        @foreach (var task in Model.Sales_notes)
+        {
+            <div class="form-check">
+                <input class="form-check-input facet-sales_notes" type="checkbox" value="@task" id="@task">
+                <label class="form-check-label" for="@task">
+                    @task
+                </label>
+            </div>
+        }
+        <label class="form-check-label" for="">
+            Filter by price interval:
+        </label>
+        <b>€ 10</b> 
+        <input id="ex2" type="text" class="span2" value="" data-slider-min="10" data-slider-max="1000" data-slider-step="5" data-slider-value="[0,1000]" />
+        <b>€ 1000</b>
+
+    </div>
+    <div id="books-content" class="col-md-10">  </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            console.log('Init GetBooks');
+            GetBooksAjax('', '');
+            $("#ex2").slider({});
+        });
+        function GetBooksAjax(languages, sales_notes) {
+            $('#books-content').load(
+                url = '/Facet/GetBooks/',
+                data = 'languages=' + languages + '&Sales_notes=' + sales_notes,
+                success = function (data) {
+                    console.log(data);
+                }
+            )
+        }
+        $('.form-check-input').on("change", function () {
+            console.log('Init GetBooks');
+            var Languages = getValueUsingClassLanguages();
+            var salesNotes = getValueUsingClassSales_notes();
+            console.log('Lan = ' + Languages + 'Sale = ' + salesNotes);
+            GetBooksAjax(Languages, salesNotes);
+        })
+
+        function getValueUsingClassSales_notes() {
+            /* declare an checkbox array */
+            var chkArray = [];
+
+            /* look for all checkboes that have a class 'chk' attached to it and check if it was checked */
+            $(".facet-sales_notes:checked").each(function () {
+                chkArray.push($(this).val());
+            });
+
+            /* we join the array separated by the comma */
+            var selected;
+            selected = chkArray.join('|');
+
+            return selected;
+        }
+        function getValueUsingClassLanguages() {
+            /* declare an checkbox array */
+            var chkArray = [];
+
+            /* look for all checkboes that have a class 'chk' attached to it and check if it was checked */
+            $(".facet-language:checked").each(function () {
+                chkArray.push($(this).val());
+            });
+
+            /* we join the array separated by the comma */
+            var selected;
+            selected = chkArray.join('|');
+
+            return selected;
+        }
+    </script>
+}

@@ -30,13 +30,35 @@ namespace Logic.Services
                 .Include(x => x.picture)
                 .Take(count);
         }
+
+        public IEnumerable<Book> GetBooksFaceted(string Languages,string Sales_note)
+        {
+            string[] languagesFacet;
+            string[] sales_notes;
+            var result = GetAllBooks();
+            if (Languages != null)
+            {
+                languagesFacet = Languages.Split('|');
+                result = result.Where(x => languagesFacet.Any(t => t == x?.language?.name));
+            }
+            if (Sales_note != null)
+            {
+                sales_notes = Sales_note.Split('|');
+                result = result.Where(x => sales_notes.Any(t => t == x?.sales_notes?.name));
+            }
+            return result;
+        }
+
+
+
+
         public IEnumerable<string> GetLanguages()
         {
-            return context.Languages.Take(5).Select(x => x.name);
+            return context.Languages.Take(15).Select(x => x.name);
         }
         public IEnumerable<string> GetSales_note()
         {
-            return context.Sales_Notes.Take(5).Select(x => x.name);
+            return context.Sales_Notes.Select(x => x.name);
         }
         public IEnumerable<string> GetPublishers()
         {

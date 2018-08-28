@@ -1,0 +1,34 @@
+﻿@model Faset.Models.Facet.BookListViewModel
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Discription</th>
+            <th>Language</th>
+            <th>Sales_note</th>
+            <th>Year</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model.Books)
+            {
+                <tr>
+                    <td>
+                        @book.Name
+                    </td>
+                    <td>
+                        @book.Discription
+                    </td>
+                    <td>
+                        @book.Language
+                    </td>
+                    <td>
+                        @book.Sales_note
+                    </td>
+                    <td>
+                        @book.Year
+                    </td>
+                </tr>
+            }
+    </tbody>
+</table>
