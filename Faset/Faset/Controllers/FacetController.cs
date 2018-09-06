@@ -20,11 +20,11 @@ namespace Faset.Controllers
                 Sales_notes = bookService.GetSales_note()
             });
         }
-        public IActionResult GetBooks(string Languages,string Sales_notes)
+        public IActionResult GetBooks(string Languages,string Sales_notes,int priceMin,int priceMax)
         {
             return View(new BookListViewModel
             {
-                Books = bookService.GetBooksFaceted(Languages, Sales_notes).Take(10).Select(x =>
+                Books = bookService.GetBooksFaceted(Languages, Sales_notes,priceMin,priceMax).Take(10).Select(x =>
                    new BookViewModel
                    {
                        Name = x?.name,

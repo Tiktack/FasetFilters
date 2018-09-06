@@ -32,7 +32,7 @@
             Filter by price interval:
         </label>
         <b>€ 10</b> 
-        <input id="ex2" type="text" class="span2" value="" data-slider-min="10" data-slider-max="1000" data-slider-step="5" data-slider-value="[0,1000]" />
+        <input id="ex2" type="text" class="span2 form-check-input" value="" data-slider-min="0" data-slider-max="5000" data-slider-step="20" data-slider-value="[0,5000]" />
         <b>€ 1000</b>
 
     </div>
@@ -42,13 +42,13 @@
     <script>
         $(document).ready(function () {
             console.log('Init GetBooks');
-            GetBooksAjax('', '');
+            GetBooksAjax('', '',0,@int.MaxValue);
             $("#ex2").slider({});
         });
-        function GetBooksAjax(languages, sales_notes) {
+        function GetBooksAjax(languages, sales_notes,priceMin,priceMax) {
             $('#books-content').load(
                 url = '/Facet/GetBooks/',
-                data = 'languages=' + languages + '&Sales_notes=' + sales_notes,
+                data = 'languages=' + languages + '&Sales_notes=' + sales_notes + '&PriceMin=' + priceMin +'&PriceMax='+priceMax,
                 success = function (data) {
                     console.log(data);
                 }
@@ -58,9 +58,11 @@
             console.log('Init GetBooks');
             var Languages = getValueUsingClassLanguages();
             var salesNotes = getValueUsingClassSales_notes();
-            console.log('Lan = ' + Languages + 'Sale = ' + salesNotes);
-            GetBooksAjax(Languages, salesNotes);
+            var price = $("#ex2").val().split(',');
+            console.log('Lan = ' + Languages + 'Sale = ' + salesNotes + 'Min = ' + price[0] + 'Max = ' + price[1]);
+            GetBooksAjax(Languages, salesNotes,price[0],price[1]);
         })
+
 
         function getValueUsingClassSales_notes() {
             /* declare an checkbox array */

@@ -31,7 +31,7 @@ namespace Logic.Services
                 .Take(count);
         }
 
-        public IEnumerable<Book> GetBooksFaceted(string Languages,string Sales_note)
+        public IEnumerable<Book> GetBooksFaceted(string Languages, string Sales_note, int PriceMin, int PriceMax)
         {
             string[] languagesFacet;
             string[] sales_notes;
@@ -46,6 +46,7 @@ namespace Logic.Services
                 sales_notes = Sales_note.Split('|');
                 result = result.Where(x => sales_notes.Any(t => t == x?.sales_notes?.name));
             }
+            result = result.Where(x => x.price >= PriceMin && x.price <= PriceMax);
             return result;
         }
 
@@ -54,7 +55,7 @@ namespace Logic.Services
 
         public IEnumerable<string> GetLanguages()
         {
-            return context.Languages.Take(15).Select(x => x.name);
+            return context.Languages.Where(x => x.name.Length > 1 && x.name.Length < 14).Take(15).Select(x => x.name);
         }
         public IEnumerable<string> GetSales_note()
         {
