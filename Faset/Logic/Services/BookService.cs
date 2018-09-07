@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
+using Remotion.Linq.Parsing.Structure;
 using Storage.Context;
 using Storage.Entities;
 
@@ -17,10 +22,11 @@ namespace Logic.Services
             //this.context = context;
         }
 
-        public IEnumerable<Book> GetAllBooks()
+        public IQueryable<Book> GetAllBooks()
         {
             return context.Books.Include(x => x.language)
                 .Include(x => x.sales_notes);
+
         }
         public IEnumerable<Book> GetBooks(int count = 10)
         {
@@ -39,20 +45,17 @@ namespace Logic.Services
             if (Languages != null)
             {
                 languagesFacet = Languages.Split('|');
-                result = result.Where(x => languagesFacet.Any(t => t == x?.language?.name));
+                result = result.Where(x => languagesFacet.Any(t => t == x.language.name));
+                var query = result.ToSql();
             }
             if (Sales_note != null)
             {
                 sales_notes = Sales_note.Split('|');
-                result = result.Where(x => sales_notes.Any(t => t == x?.sales_notes?.name));
+                result = result.Where(x => sales_notes.Any(t => t == x.sales_notes.name));
             }
             result = result.Where(x => x.price >= PriceMin && x.price <= PriceMax);
             return result;
         }
-
-
-
-
         public IEnumerable<string> GetLanguages()
         {
             return context.Languages.Where(x => x.name.Length > 1 && x.name.Length < 14).Take(15).Select(x => x.name);
@@ -65,6 +68,32 @@ namespace Logic.Services
         {
             return context.Publishers.Take(5).Select(x => x.name);
         }
+    }
+    public static class IQueryableExtensions
+    {
+        private static readonly TypeInfo QueryCompilerTypeInfo = typeof(QueryCompiler).GetTypeInfo();
 
+        private static readonly FieldInfo QueryCompilerField = typeof(EntityQueryProvider).GetTypeInfo().DeclaredFields.First(x => x.Name == "_queryCompiler");
+
+        private static readonly FieldInfo QueryModelGeneratorField = QueryCompilerTypeInfo.DeclaredFields.First(x => x.Name == "_queryModelGenerator");
+
+        private static readonly FieldInfo DataBaseField = QueryCompilerTypeInfo.DeclaredFields.Single(x => x.Name == "_database");
+
+        private static readonly PropertyInfo DatabaseDependenciesField = typeof(Database).GetTypeInfo().DeclaredProperties.Single(x => x.Name == "Dependencies");
+
+        public static string ToSql<TEntity>(this IQueryable<TEntity> query) where TEntity : class
+        {
+            var queryCompiler = (QueryCompiler)QueryCompilerField.GetValue(query.Provider);
+            var modelGenerator = (QueryModelGenerator)QueryModelGeneratorField.GetValue(queryCompiler);
+            var queryModel = modelGenerator.ParseQuery(query.Expression);
+            var database = (IDatabase)DataBaseField.GetValue(queryCompiler);
+            var databaseDependencies = (DatabaseDependencies)DatabaseDependenciesField.GetValue(database);
+            var queryCompilationContext = databaseDependencies.QueryCompilationContextFactory.Create(false);
+            var modelVisitor = (RelationalQueryModelVisitor)queryCompilationContext.CreateQueryModelVisitor();
+            modelVisitor.CreateQueryExecutor<TEntity>(queryModel);
+            var sql = modelVisitor.Queries.First().ToString();
+
+            return sql;
+        }
     }
 }
